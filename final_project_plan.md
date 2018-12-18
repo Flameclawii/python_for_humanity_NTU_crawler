@@ -171,23 +171,16 @@ def crawl_web(driver) :
 
 ### W15 12/19  Checkpoint 2
 
-* 完成資料儲存、讀取與比對
+* 懶惰的我直接附上 github link，我只是懶得打很多字，但我還是有在做事喔喔喔！OuO，看我commit的時間和內容就知道多血汗了(X
 
-    儲存檔案：會另外開一個.py來處理這部分的問題
-    比對檔案：會和儲存檔案function寫在同一個.py檔
+https://github.com/Flameclawii/python_for_humanity_NTU_crawler
 
 
-```python
-    def load_data_from_file(file_path):
-        pass  # function to be implemented
-        
-    def save_data_to_file(file_path):
-        pass  # function to be implemented
-    
-    def file_compare():
-        pass  # function to be implemented
+### W16 12/26  Checkpoint 3
 
-```
+* 優化輸入介面、完成使用者通知的部分
+
+    內容正在構想，稍後會補上
 
 * 完成自動在背景執行
 
@@ -197,12 +190,6 @@ def crawl_web(driver) :
     def work_in_background (ev_dict, ev_info):
         pass #後面會寫
 ```
-
-### W16 12/26  Checkpoint 3
-
-* 優化輸入介面、完成使用者通知的部分
-
-    內容正在構想，稍後會補上
 
 ## W17 01/02  口頭報告 / beta release
 
