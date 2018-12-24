@@ -127,16 +127,12 @@ def crawl_web(driver) :
             for link in links:
                 
                 driver.get(link)
-                html = driver.page_source
-                soup = BeautifulSoup(html, "html.parser")
                 
-                try: 
-                    driver.switch_to.frame("Main")
-                    try:
-                        driver.switch_to.frame("mainFrame")
-
-                    except BaseException:
-                        pass
+                try:
+                    driver.switch_to.frame("mainFrame")
+                    html = driver.page_source
+                    soup = BeautifulSoup(html, "html.parser")
+                    print("test00_frame")
 
                 except BaseException:
                     pass
@@ -158,13 +154,20 @@ def crawl_web(driver) :
     
     try:
         with open('saver.json', 'r+') as f:
-            json.dump(difference_class_content, f, ensure_ascii=False)
+            all_content = f.read()
+            if (difference_class_content == all_content):
+                print("Nothing change!")
+                pass
+            else: ##細部比較還沒做
+                print("something change!")
+                json.dump(difference_class_content, f, ensure_ascii = 0)
+
     except BaseException:
         with open('saver.json', 'w') as f:
-            json.dump(difference_class_content, f, ensure_ascii=False)
+            json.dump(difference_class_content, f, ensure_ascii = 0)
 
     
-        #driver.close()
+    #driver.close()
         
 
 
