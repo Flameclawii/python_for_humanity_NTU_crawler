@@ -198,7 +198,7 @@ def crawl_web(driver) :
         
 """
 待辦：
-1. comparasion
+1. 清空文件寫入新文件
 2. backgroung working
 
 """
