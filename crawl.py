@@ -82,8 +82,7 @@ def left_tag_link_getter(driver, class_link):
                     nametag.append(parts_of_links[0])
                 else:
                     pass
-
-            
+     
             return links, nametag , matched_name
             # ----- #
 
@@ -105,8 +104,6 @@ def crawl_web(driver) :
     # 科目名稱 和 網址爬完後 要拿來存取的容器 跟變數 設置
     difference_class_content = {} # 等待存取
 
-    website_content_saver = {}
-
     for class_link in class_links: ##一直被最後一個蓋過去
         
         # to decide whether or not let links, nametag, matched_name = left_tag_link_getter(driver, class_link)
@@ -120,9 +117,9 @@ def crawl_web(driver) :
             class_subproject_links, nametag, matched_name = left_tag_link_getter(driver, class_link)##nametag 左邊標籤 ##match_name 課程名稱
 
         # ----- #
-        
-            
+
             number_of_nametag = 0 #record the number of the nametag
+            website_content_saver = {}
 
             for link in class_subproject_links:
                 
@@ -132,7 +129,6 @@ def crawl_web(driver) :
                     driver.switch_to.frame("mainFrame")
                     html = driver.page_source
                     soup = BeautifulSoup(html, "html.parser")
-                    print("test00_frame")
 
                 except BaseException:
                     pass
@@ -144,36 +140,67 @@ def crawl_web(driver) :
 
                 
             difference_class_content[str(matched_name)] = website_content_saver
-            website_content_saver = {}
-
-            print (matched_name)
-    
             
 
+            ###print (matched_name) 
             
 
     #print (difference_class_content)
     
-    
+    """read in and compare"""
+
+    num_of_changes = 0
+
     try:
         with open('saver.json', 'r+') as f:
             all_content = json.load(f)
-            print(type(all_content))
-            if (difference_class_content == all_content):
+            #print(type(all_content))
+            
+            if (difference_class_content == all_content):##初步比較
                 print("Nothing change!")
                 pass
-            else: ##細部比較還沒做
-                print("something change!")
-                json.dump(difference_class_content, f, ensure_ascii = 0)
 
-    except BaseException:
+            else:##細部比較
+                for classes_ in difference_class_content:
+                    for content_tag in difference_class_content[classes_]:
+                        try:
+                            if (difference_class_content[classes_][content_tag] != all_content[classes_][content_tag]):
+                                all_content[classes_][content_tag] = difference_class_content[classes_][content_tag]
+
+                                print("The class : {} has something changed about {}".format(classes_, content_tag))
+                                
+                                ##刪除當前檔案內容
+
+                                json.dump(all_content, f, ensure_ascii = 0)
+                                
+                                num_of_changes += 1
+                        except KeyError: ##原先tag不存在，更新的時候加了tag
+                            all_content[classes_][content_tag] = difference_class_content[classes_][content_tag]
+
+                            print("The class : {} had been added a new tag : {}".format(classes_, content_tag))
+                                
+                            ##刪除當前檔案內容
+                            
+                            json.dump(all_content, f, ensure_ascii = 0)
+                            num_of_changes += 1
+                                
+
+
+    except OSError:
         with open('saver.json', 'w') as f:
             json.dump(difference_class_content, f, ensure_ascii = 0)
+            print("There's no database now, yet never mind , we make a now one for you!")
 
+    if (num_of_changes != 0):
+        print ("There' {} change in this time update!".format(num_of_changes))
     
-    #driver.close()
+    driver.close()
         
+"""
+待辦：
+1. comparasion
+2. backgroung working
 
-
+"""
 
 login_main()
