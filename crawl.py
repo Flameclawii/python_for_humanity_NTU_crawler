@@ -51,8 +51,8 @@ def login_main() :
         crawl_web(driver)
 
 
-def left_tag_link_getter(driver, obj):
-    newpage = driver.get(obj)
+def left_tag_link_getter(driver, class_link):
+    newpage = driver.get(class_link)
 
     #抓到 frame 裡面 -----
     try: 
@@ -100,31 +100,31 @@ def crawl_web(driver) :
 
     html = driver.page_source
     soup = BeautifulSoup(html, "html.parser")
-    class_link = re.findall("<a.+\"(https://ceiba.ntu.edu.tw.+)\" .+\".+?>", str(soup)) #待修正：不用正規 用bs4
+    class_links = re.findall("<a.+\"(https://ceiba.ntu.edu.tw.+)\" .+\".+?>", str(soup)) #待修正：不用正規 用bs4
     
     # 科目名稱 和 網址爬完後 要拿來存取的容器 跟變數 設置
     difference_class_content = {} # 等待存取
 
     website_content_saver = {}
 
-    for obj in class_link:
+    for class_link in class_links: ##一直被最後一個蓋過去
         
-        # to decide whether or not let links, nametag, matched_name = left_tag_link_getter(driver, obj)
+        # to decide whether or not let links, nametag, matched_name = left_tag_link_getter(driver, class_link)
         # in case that left_tag_link_getter return None
         
-        test0, test1, test2 = left_tag_link_getter(driver, obj)
+        test0, test1, test2 = left_tag_link_getter(driver, class_link)
 
         if (test0 == 0 and test1 == 0 and test2 == 0):
             pass
         else:
-            links, nametag, matched_name = left_tag_link_getter(driver, obj)
+            class_subproject_links, nametag, matched_name = left_tag_link_getter(driver, class_link)##nametag 左邊標籤 ##match_name 課程名稱
 
         # ----- #
         
             
             number_of_nametag = 0 #record the number of the nametag
 
-            for link in links:
+            for link in class_subproject_links:
                 
                 driver.get(link)
                 
@@ -142,10 +142,13 @@ def crawl_web(driver) :
                 
                 number_of_nametag += 1
 
-            
+                
+            difference_class_content[str(matched_name)] = website_content_saver
+            website_content_saver = {}
+
             print (matched_name)
     
-            difference_class_content[str(matched_name)] = website_content_saver
+            
 
             
 
