@@ -157,7 +157,8 @@ def crawl_web(driver) :
     
     try:
         with open('saver.json', 'r+') as f:
-            all_content = f.read()
+            all_content = json.load(f)
+            print(type(all_content))
             if (difference_class_content == all_content):
                 print("Nothing change!")
                 pass
