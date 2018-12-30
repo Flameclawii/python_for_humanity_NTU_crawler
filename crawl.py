@@ -155,7 +155,9 @@ def crawl_web(driver) :
         with open('saver.json', 'r+') as f:
             all_content = json.load(f)
             #print(type(all_content))
-            
+        
+        with open('saver.json', 'w+') as f:
+
             if (difference_class_content == all_content):##初步比較
                 print("Nothing change!")
                 pass
@@ -171,7 +173,7 @@ def crawl_web(driver) :
                                 
                                 ##刪除當前檔案內容
 
-                                json.dump(all_content, f, ensure_ascii = 0)
+                                
                                 
                                 num_of_changes += 1
                         except KeyError: ##原先tag不存在，更新的時候加了tag
@@ -181,10 +183,11 @@ def crawl_web(driver) :
                                 
                             ##刪除當前檔案內容
                             
-                            json.dump(all_content, f, ensure_ascii = 0)
+                            
                             num_of_changes += 1
-                                
-
+                
+                json.dump(all_content, f, ensure_ascii = 0)
+                        
 
     except OSError:
         with open('saver.json', 'w') as f:
@@ -198,8 +201,8 @@ def crawl_web(driver) :
         
 """
 待辦：
-1. 清空文件寫入新文件
-2. backgroung working
+
+1. backgroung working
 
 """
 
