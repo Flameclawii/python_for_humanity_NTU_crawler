@@ -170,10 +170,7 @@ def crawl_web(driver) :
                                 all_content[classes_][content_tag] = difference_class_content[classes_][content_tag]
 
                                 print("The class : {} has something changed about {}".format(classes_, content_tag))
-                                
-                                ##刪除當前檔案內容
-
-                                
+                                        
                                 
                                 num_of_changes += 1
                         except KeyError: ##原先tag不存在，更新的時候加了tag
@@ -181,9 +178,7 @@ def crawl_web(driver) :
 
                             print("The class : {} had been added a new tag : {}".format(classes_, content_tag))
                                 
-                            ##刪除當前檔案內容
-                            
-                            
+                               
                             num_of_changes += 1
                 
                 json.dump(all_content, f, ensure_ascii = 0)
@@ -202,7 +197,10 @@ def crawl_web(driver) :
 """
 待辦：
 
-1. backgroung working
+1. background working
+2. 首次輸入後不必再次輸入
+3. improve user interface 
+4. pip install ?
 
 """
 
