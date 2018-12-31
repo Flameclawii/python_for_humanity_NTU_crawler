@@ -18,6 +18,8 @@ import json
 
 from account_login_saver import *
 
+import os
+
 account_info = account_saver_tool()
 
 def login_main() : 
@@ -46,13 +48,18 @@ def login_main() :
     login_click = driver.find_element_by_xpath("//*[@id=\"content\"]/form/table/tbody/tr[3]/td[2]/input")
     login_click.click()
     
-    
-    current_url = driver.current_url
-    if (current_url != "https://ceiba.ntu.edu.tw/student/index.php"):
-        print ("帳號密碼錯誤！")
-    elif (current_url == "https://ceiba.ntu.edu.tw/student/index.php"):
-        print ("登入成功！")
+    try:
+        current_url = driver.current_url
+    except BaseException:
+        current_url = 0
+
+    if (current_url == "https://ceiba.ntu.edu.tw/student/index.php"):
         crawl_web(driver)
+    else:
+        print ("帳號密碼錯誤 請在重開程式後 重新設定帳號密碼！")
+        os.remove("./account_info.json")
+        driver.close()
+        exit()
 
 
 def left_tag_link_getter(driver, class_link):
