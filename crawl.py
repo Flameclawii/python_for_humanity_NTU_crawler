@@ -16,9 +16,13 @@ import time
 
 import json
 
+from account_login_saver import *
+
+account_info = account_saver_tool()
+
 def login_main() : 
-    account = input("請輸入Ceiba帳號：")
-    passcode = input("請輸入Ceiba密碼：")
+    account = account_info["account"]
+    passcode = account_info["passcode"]
 
     options = webdriver.ChromeOptions() #to hide the browser
     options.add_argument("headless")
@@ -198,7 +202,7 @@ def crawl_web(driver) :
 待辦：
 
 1. background working
-2. 首次輸入後不必再次輸入
+2. 手動更改ceiba account
 3. improve user interface 
 4. pip install ?
 
