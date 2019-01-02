@@ -209,7 +209,7 @@ def crawl_web(driver) :
 待辦：
 
 1. background working
-2. 手動更改ceiba account
+2. 手動更改 ceiba account
 3. improve user interface 
 4. pip install ?
 
