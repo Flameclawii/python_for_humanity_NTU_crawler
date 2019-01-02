@@ -11,9 +11,7 @@ import requests
 from bs4 import BeautifulSoup
 
 import re
-
 import time
-
 import json
 
 from account_login_saver import *
@@ -125,7 +123,7 @@ def crawl_web(driver) :
         if (test0 == 0 and test1 == 0 and test2 == 0):
             pass
         else:
-            class_subproject_links, nametag, matched_name = left_tag_link_getter(driver, class_link)##nametag 左邊標籤 ##match_name 課程名稱
+            class_subproject_links, nametag, matched_name = test0, test1, test2##nametag 左邊標籤 ##match_name 課程名稱
 
         # ----- #
 
@@ -209,9 +207,10 @@ def crawl_web(driver) :
 待辦：
 
 1. background working
-2. 手動更改 ceiba account
+2. windows 用戶兼容
 3. improve user interface 
 4. pip install ?
+
 
 """
 

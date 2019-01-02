@@ -9,10 +9,10 @@ def account_saver_tool():
         return account_info
 
     except OSError:
-        print("目前沒有您的 NTU-Ceiba 資料 請您為我們輸入您的資料\n")
+        print("\n目前沒有您的 NTU-Ceiba 資料 請您為我們輸入您的資料\n")
         account = input("請鍵入您的帳號: ")
         passcode = input("請鍵入您的密碼: ")
-        print ("\n")
+        print ("")
         
         info = {"account" : account, "passcode": passcode}
         
@@ -23,6 +23,6 @@ def account_saver_tool():
             account_info = json.load(f)
         
         print ("若首次登入成功後 系統將自動為您紀錄下帳號密碼")
-        print ("不過別擔心 您仍可在事後手動更改您的帳號密碼~")
+        print ("不過別擔心 您仍可在事後手動更改您的帳號密碼~\n")
 
         return account_info
