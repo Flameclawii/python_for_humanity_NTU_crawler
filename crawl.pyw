@@ -206,7 +206,7 @@ def crawl_web(driver) :
 """
 待辦：
 
-1. background working
+1. background working(剩下檔名更改)
 2. windows 用戶兼容
 3. improve user interface 
 4. pip install ?
