@@ -11,12 +11,12 @@ scheduler = BlockingScheduler()#BackgroundScheduler() #
 def status_judgement():
     with open ("program_status", "r") as f:
         status = f.read()
-
-    if status == "0":
-        scheduler.shutdown()#爆炸   
     
-    elif status == "1":
+    if status == "1":
         pass
+
+    else:
+        scheduler.shutdown()#爆炸 
         
 
 def shut_down():
@@ -84,3 +84,8 @@ def main_func():
 
 main_func()
 
+
+""""
+待解決問題：
+1. 輸入時效 十分鐘問題
+"""
