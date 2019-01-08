@@ -17,96 +17,6 @@ import json
 import os
 
 
-
-def login_main() : 
-    with open ("account_info.json", "r") as f:
-        account_info = json.load(f)
-
-    account = account_info["account"]
-    passcode = account_info["passcode"]
-
-    options = webdriver.ChromeOptions() #to hide the browser
-    options.add_argument("headless")
-
-    chromedriver = "./chromedriver" #open a browser
-    driver = webdriver.Chrome(executable_path = chromedriver, chrome_options = options)
-    driver.get('https://ceiba.ntu.edu.tw/')
-
-    login_click = driver.find_element_by_xpath("//*[@id=\"obj1\"]/form/p/input")
-    login_click.click()
-
-    username = driver.find_element_by_xpath("//*[@id=\"myTable\"]/td/input")
-    password = driver.find_element_by_xpath("//*[@id=\"myTable2\"]/td/input")
-
-    username.clear()    #to confirm there's no value in the input column
-    password.clear()
-
-    username.send_keys(account) 
-    password.send_keys(passcode)
-
-    login_click = driver.find_element_by_xpath("//*[@id=\"content\"]/form/table/tbody/tr[3]/td[2]/input")
-    login_click.click()
-    
-    try:
-        current_url = driver.current_url
-    except BaseException:
-        current_url = 0
-
-    if (current_url == "https://ceiba.ntu.edu.tw/student/index.php"):
-        crawl_web(driver)
-    else:
-        print ("帳號密碼錯誤 請在重開程式後 重新設定帳號密碼！")
-        os.remove("./account_info.json")
-        with open ("./program_status", "w+") as f: #程式關閉後 取消剩餘排成
-            f.write("0")
-        driver.close()
-        exit()
-
-
-def left_tag_link_getter(driver, class_link):
-    newpage = driver.get(class_link)
-
-    #抓到 frame 裡面 -----
-    try: 
-        driver.switch_to.frame("Main")
-        try:
-            driver.switch_to.frame("leftFrame")
-    # ----- #
-            page_html = driver.page_source
-            page_soup = BeautifulSoup(page_html, "html.parser")
-            
-            class_name = page_soup.find_all("title")
-            matched_name = re.findall(r"<title>.+：(.+)</title>", str(class_name))
-            matched_name = matched_name[0]
-            #to prepare the link -----
-
-            allpages = page_soup.find_all("a")
-            
-            match = re.findall(r"\('(\w+)?','(\w+)?'?\)", str(allpages))
-            links = []
-            nametag = []
-            for parts_of_links in match:
-                if (parts_of_links[0] != "logout"):
-                    link = "https://ceiba.ntu.edu.tw/modules/index.php?csn={}&default_fun={}&current_lang=chinese"\
-                    .format(parts_of_links[1], parts_of_links[0])
-
-                    links.append(link) 
-                    nametag.append(parts_of_links[0])
-                else:
-                    pass
-     
-            return links, nametag , matched_name
-            # ----- #
-
-        except BaseException:
-            return 0, 0, 0
-            pass
-
-    except BaseException:
-        return 0, 0, 0
-        pass
-
-
 def crawl_web(driver) :
 
     html = driver.page_source
@@ -167,32 +77,31 @@ def crawl_web(driver) :
         with open('saver.json', 'r+') as f:
             all_content = json.load(f)
             #print(type(all_content))
-        
-        with open('saver.json', 'w+') as f:
 
-            if (difference_class_content == all_content):##初步比較
-                print("Nothing change!")
-                pass
+        if (difference_class_content == all_content):##初步比較
+            print("Nothing change!")
+            pass
 
-            else:##細部比較
-                for classes_ in difference_class_content:
-                    for content_tag in difference_class_content[classes_]:
-                        try:
-                            if (difference_class_content[classes_][content_tag] != all_content[classes_][content_tag]):
-                                all_content[classes_][content_tag] = difference_class_content[classes_][content_tag]
-
-                                print("The class : {} has something changed about {}".format(classes_, content_tag))
-                                        
-                                
-                                num_of_changes += 1
-                        except KeyError: ##原先tag不存在，更新的時候加了tag
+        else:##細部比較
+            for classes_ in difference_class_content:
+                for content_tag in difference_class_content[classes_]:
+                    try:
+                        if (difference_class_content[classes_][content_tag] != all_content[classes_][content_tag]):
                             all_content[classes_][content_tag] = difference_class_content[classes_][content_tag]
 
-                            print("The class : {} had been added a new tag : {}".format(classes_, content_tag))
-                                
-                               
+                            print("The class : {} has something changed about {}".format(classes_, content_tag))
+                                    
+                            
                             num_of_changes += 1
-                
+                    except KeyError: ##原先tag不存在，更新的時候加了tag
+                        all_content[classes_][content_tag] = difference_class_content[classes_][content_tag]
+
+                        print("The class : {} had been added a new tag : {}".format(classes_, content_tag))
+                            
+                            
+                        num_of_changes += 1
+
+            with open('saver.json', 'w+') as f:
                 json.dump(all_content, f, ensure_ascii = 0)
                         
 
@@ -205,14 +114,104 @@ def crawl_web(driver) :
         print ("There' {} change in this time update!".format(num_of_changes))
     
     driver.close()
-        
+
+
+def left_tag_link_getter(driver, class_link):
+    newpage = driver.get(class_link)
+
+    #抓到 frame 裡面 -----
+    try: 
+        driver.switch_to.frame("Main")
+        try:
+            driver.switch_to.frame("leftFrame")
+    # ----- #
+            page_html = driver.page_source
+            page_soup = BeautifulSoup(page_html, "html.parser")
+            
+            class_name = page_soup.find_all("title")
+            matched_name = re.findall(r"<title>.+：(.+)</title>", str(class_name))
+            matched_name = matched_name[0]
+            #to prepare the link -----
+
+            allpages = page_soup.find_all("a")
+            
+            match = re.findall(r"\('(\w+)?','(\w+)?'?\)", str(allpages))
+            links = []
+            nametag = []
+            for parts_of_links in match:
+                if (parts_of_links[0] != "logout"):
+                    link = "https://ceiba.ntu.edu.tw/modules/index.php?csn={}&default_fun={}&current_lang=chinese"\
+                    .format(parts_of_links[1], parts_of_links[0])
+
+                    links.append(link) 
+                    nametag.append(parts_of_links[0])
+                else:
+                    pass
+     
+            return links, nametag , matched_name
+            # ----- #
+
+        except BaseException:
+            return 0, 0, 0
+            pass
+
+    except BaseException:
+        return 0, 0, 0
+        pass
+
+
+def login_main() : 
+    with open ("account_info.json", "r") as f:
+        account_info = json.load(f)
+
+    account = account_info["account"]
+    passcode = account_info["passcode"]
+
+    options = webdriver.ChromeOptions() #to hide the browser
+    options.add_argument("headless")
+
+    chromedriver = "./chromedriver" #open a browser
+    driver = webdriver.Chrome(executable_path = chromedriver, chrome_options = options)
+    driver.get('https://ceiba.ntu.edu.tw/')
+
+    login_click = driver.find_element_by_xpath("//*[@id=\"obj1\"]/form/p/input")
+    login_click.click()
+
+    username = driver.find_element_by_xpath("//*[@id=\"myTable\"]/td/input")
+    password = driver.find_element_by_xpath("//*[@id=\"myTable2\"]/td/input")
+
+    username.clear()    #to confirm there's no value in the input column
+    password.clear()
+
+    username.send_keys(account) 
+    password.send_keys(passcode)
+
+    login_click = driver.find_element_by_xpath("//*[@id=\"content\"]/form/table/tbody/tr[3]/td[2]/input")
+    login_click.click()
+    
+    try:
+        current_url = driver.current_url
+    except BaseException:
+        current_url = 0
+
+    if (current_url == "https://ceiba.ntu.edu.tw/student/index.php"):
+        crawl_web(driver)
+    else:
+        print ("帳號密碼錯誤 請在重開程式後 重新設定帳號密碼！")
+        os.remove("./account_info.json")
+        with open ("./program_status", "w+") as f: #程式關閉後 取消剩餘排成
+            f.write("0")
+        driver.close()
+        exit()
+
+
+      
 """
 待辦：
 
-1. background working(剩下檔名更改)
+1. background working(防止檔案覆寫問題)
 2. windows 用戶兼容
 3. improve user interface 
 4. pip install ?
-
 
 """

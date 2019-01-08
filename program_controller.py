@@ -15,7 +15,6 @@ def status_judgement():
         status = f.read()
 
     if status == "1":
-        print ("有執行")
         pass
 
     else:
@@ -34,7 +33,7 @@ def shut_down():
     
     elif a == "N" or a == "n" :
         print("沒事 沒事 考慮清楚還是可以關掉喔！")
-        return 0
+        
     else:
         print("還敢亂輸入啊 就你最特別！")
         shut_down()
@@ -44,8 +43,9 @@ def work_in_bg():
     with open ("program_status", "w+") as f:
         f.write("1")
 
-    scheduler.add_job(status_judgement, id = 'status_judgement', trigger = "interval", seconds = 10)#seconds = )
-    scheduler.add_job(login_main, "interval", id = 'login', seconds = 10)#minute = 10)
+    scheduler.add_job(status_judgement, id = 'status_judgement', trigger = "interval", seconds = 2)#seconds = )
+    
+    scheduler.add_job(login_main, "interval", id = 'login', minutes = 5)
     
     scheduler.start()
     
@@ -54,7 +54,7 @@ def work_in_bg():
 #-----
 def main_func():
     work_or_not = input("請選擇您要的功能：\n(1) 啟動 NTU Ceiba update informer\
-    \n(2) 停止當前背景運作的 NTU Ceiba update informer\n")
+    \n(2) 停止當前背景運作的 NTU Ceiba update informer\n(3) 更改 NTU Ceiba 的帳號密碼\n")
 
 
     try:
@@ -83,9 +83,13 @@ def main_func():
 
         elif status == "0":
             print("城市現在就沒有在運行喔～")
-
+    
+    elif (work_or_not == "3" or work_or_not == "(3)"):
+        account_info_change()
+    
     else:
         print("還敢亂輸入啊 就你最特別！")
+        main_func()
 
 
 
