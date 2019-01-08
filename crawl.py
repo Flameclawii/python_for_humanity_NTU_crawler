@@ -14,13 +14,14 @@ import re
 import time
 import json
 
-from account_login_saver import *
-
 import os
 
-account_info = account_saver_tool()
+
 
 def login_main() : 
+    with open ("account_info.json", "r") as f:
+        account_info = json.load(f)
+
     account = account_info["account"]
     passcode = account_info["passcode"]
 
@@ -56,6 +57,8 @@ def login_main() :
     else:
         print ("帳號密碼錯誤 請在重開程式後 重新設定帳號密碼！")
         os.remove("./account_info.json")
+        with open ("./program_status", "w+") as f: #程式關閉後 取消剩餘排成
+            f.write("0")
         driver.close()
         exit()
 
@@ -213,5 +216,3 @@ def crawl_web(driver) :
 
 
 """
-
-login_main()
