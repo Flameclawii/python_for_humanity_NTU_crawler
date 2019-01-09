@@ -1,13 +1,12 @@
 from datetime import datetime
 import time
 import os
-from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from account_login_saver import *
 from crawl import *
 
-scheduler = BlockingScheduler()#BackgroundScheduler() #
+scheduler = BlockingScheduler()# 
 
 
 def status_judgement():
@@ -43,9 +42,9 @@ def work_in_bg():
     with open ("program_status", "w+") as f:
         f.write("1")
 
-    scheduler.add_job(status_judgement, id = 'status_judgement', trigger = "interval", seconds = 2)#seconds = )
-    
-    scheduler.add_job(login_main, "interval", id = 'login', minutes = 5)
+    scheduler.add_job(status_judgement, trigger = "interval", seconds = 2)#seconds = )
+    login_main()
+    scheduler.add_job(login_main, "interval", minutes = 10)
     
     scheduler.start()
     
@@ -53,6 +52,7 @@ def work_in_bg():
 
 #-----
 def main_func():
+    print("若要停用持續運行的程式 請另外執行程式並選功能2 來停止")
     work_or_not = input("請選擇您要的功能：\n(1) 啟動 NTU Ceiba update informer\
     \n(2) 停止當前背景運作的 NTU Ceiba update informer\n(3) 更改 NTU Ceiba 的帳號密碼\n")
 
@@ -69,20 +69,27 @@ def main_func():
 
     if (work_or_not == "1" or work_or_not == "(1)"):
         if status == "0" :
-            
             account_saver_tool()
             work_in_bg()
             
         
         elif status == "1":
-            print("程式正在執行中囉！ 目前不開放多重執行程式：）")
+            a = input("偵測到錯誤 請問你上次是否有直接關閉程式？(Y/N)")
+            if a == "Y" or a == "y":
+                with open ("program_status", "w+") as f:
+                    f.write("0")
+                print("已替您解決\n")
+                main_func()
+            if a == "N" or a == "n":
+                print("程式正在運行中囉，若找不到正在運行的程式，可能您上次直接關閉程式，而非透過功能2關閉")
+
 
     elif (work_or_not == "2" or work_or_not == "(2)"):
         if status == "1":
             shut_down()
 
         elif status == "0":
-            print("城市現在就沒有在運行喔～")
+            print("程式現在就沒有在運行喔～")
     
     elif (work_or_not == "3" or work_or_not == "(3)"):
         account_info_change()
@@ -92,11 +99,4 @@ def main_func():
         main_func()
 
 
-
 main_func()
-
-
-""""
-待解決問題：
-1. 輸入時效 十分鐘問題
-"""

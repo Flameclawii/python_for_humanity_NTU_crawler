@@ -205,13 +205,4 @@ def login_main() :
         exit()
 
 
-      
-"""
-待辦：
 
-1. background working(防止檔案覆寫問題)
-2. windows 用戶兼容
-3. improve user interface 
-4. pip install ?
-
-"""
