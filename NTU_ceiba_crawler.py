@@ -21,7 +21,6 @@ from PIL import ImageTk
 from PIL import Image
 from itertools import count
 
-
 class NotifyControl(tk.Tk):
     """control the pages, to let multiple pages appear in the same window"""
 
@@ -220,7 +219,7 @@ class WinNotification(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.Controller = controller
         self.update_category = category
-        self.all_category = ["課程內容", "學習成績", "投票區", "討論看板", "作業區", "資源共享", "公布欄"]
+        self.all_category = ["課程內容", "學習成績", "投票區", "討論看板", "作業區", "資源分享", "公布欄"]
         self.grid()
         self.createBackground()
         self.createWidgets()
@@ -269,7 +268,7 @@ class WinNotification(tk.Frame):
                     self.btn_insert_image("./pics/h_score.jpg", 13, 5, cat)
                 elif cat == "討論看板":
                     self.btn_insert_image("./pics/h_discuss.jpg", 13, 9, cat)
-                elif cat == "資源共享":
+                elif cat == "資源分享":
                     self.btn_insert_image("./pics/h_resource.jpg", 13, 13, cat)
                 elif cat == "作業區":
                     self.btn_insert_image("./pics/h_hw.jpg", 18, 3, cat)
@@ -286,7 +285,7 @@ class WinNotification(tk.Frame):
                     self.lbl_insert_image("./pics/empty_score.jpg", 13, 5)
                 elif cat == "討論看板":
                     self.lbl_insert_image("./pics/empty_discuss.jpg", 13, 9)
-                elif cat == "資源共享":
+                elif cat == "資源分享":
                     self.lbl_insert_image("./pics/empty_resource.jpg", 13, 13)
                 elif cat == "作業區":
                     self.lbl_insert_image("./pics/empty_hw.jpg", 18, 3)
@@ -368,7 +367,7 @@ class WinUpdateInfo(tk.Frame):
         elif self.category == "討論看板":
             self.insert_title("./pics/title_discuss.JPG")
             self.insert_talk("./pics/talk_discuss.png")
-        elif self.category == "資源共享":
+        elif self.category == "資源分享":
             self.insert_title("./pics/title_resource.JPG")
             self.insert_talk("./pics/talk_resource.png")
         elif self.category == "作業區":
@@ -668,44 +667,50 @@ def content_comparison(difference_class_content):
     try:
         with open('saver.json', 'r+') as f:
             all_content = json.load(f)
-            #print(type(all_content))
-
-        if (difference_class_content == all_content):  # 初步比較
-            return temp_record_dict
-
-        else:  # 細部比較
-            for classes_ in difference_class_content:
-                for content_tag in difference_class_content[classes_]:
-                    try:
-                        if (difference_class_content[classes_][content_tag] != all_content[classes_][content_tag]):
-                            all_content[classes_][content_tag] = difference_class_content[classes_][content_tag]
-                            try:
-                                temp_record_dict[content_tag].append(classes_)
-                            except KeyError:
-                                temp_record_dict[content_tag] = [classes_, ]
-                            #print(temp_record_dict, 1)
-                            #print("The class : {} has something changed about {}".format(classes_, content_tag))
-                    
-                    except KeyError:  # 原先tag不存在，更新的時候加了tag
-                        all_content[classes_][content_tag] = difference_class_content[classes_][content_tag]
-                        try:
-                            temp_record_dict[content_tag].append(classes_)
-                        except KeyError:
-                            temp_record_dict[content_tag] = [classes_, ]
-                        #print(temp_record_dict, 2)
-                        #print("The class : {} had been added a new tag : {}".format(classes_, content_tag))
-                            
-
-            with open('saver.json', 'w+') as f:
-                json.dump(all_content, f, ensure_ascii = 0)
-
-            return temp_record_dict
-                        
-
+            
     except OSError:  # there's no database now
         with open('saver.json', 'w') as f:
             json.dump(difference_class_content, f, ensure_ascii = 0)
-            #print("There's no database now, yet never mind , we make a now one for you!")
+            
+        return temp_record_dict
+
+
+    if (difference_class_content == all_content):  # 初步比較
+        return temp_record_dict
+
+    else:  # 細部比較
+        for classes_ in difference_class_content:
+                                
+            if classes_ in all_content:  # the class existed originally
+                for content_tag in difference_class_content[classes_]:
+
+                    if content_tag in all_content[classes_]:  # the tag existed originally
+                        if (difference_class_content[classes_][content_tag] != all_content[classes_][content_tag]):
+                            all_content[classes_][content_tag] = difference_class_content[classes_][content_tag]
+                            if content_tag in temp_record_dict:
+                                temp_record_dict[content_tag].append(classes_)
+                            else:
+                                temp_record_dict[content_tag] = [classes_, ]
+
+                    else:# new tag
+                        all_content[classes_][content_tag] = difference_class_content[classes_][content_tag]
+                        if content_tag in temp_record_dict:
+                            temp_record_dict[content_tag].append(classes_)
+                        else:
+                            temp_record_dict[content_tag] = [classes_, ]
+                        
+            else:  # new class
+                all_content[classes_] = difference_class_content[classes_]
+                for tag in difference_class_content[classes_]:
+                    if tag in temp_record_dict:
+                        temp_record_dict[tag].append(classes_)
+                    else:
+                        temp_record_dict[tag] = [classes_, ]
+                            
+
+        with open('saver.json', 'w+') as f:
+            json.dump(all_content, f, ensure_ascii = 0)
+
         return temp_record_dict
 
 
